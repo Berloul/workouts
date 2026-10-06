@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f6e74">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Workouts">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Workout Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: phone-first app; home list of sessions → session view with set rows; rest timer docked at the bottom */
+:root{
+  --bg:#f2f4f6; --surface:#fff; --ink:#17202b; --muted:#5b6876; --line:#d8dee5;
+  --accent:#0f6e74; --accent-ink:#fff; --done:#e4f2ef; --field:#f6f8fa; --warn:#8a3d16;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141a; --surface:#18202a; --ink:#e7ecf1; --muted:#94a2b1; --line:#2a3542;
+  --accent:#4cc2c4; --accent-ink:#0f141a; --done:#15302f; --field:#111820; --warn:#f2b48c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --surface:#18202a; --ink:#e7ecf1; --muted:#94a2b1; --line:#2a3542;
+  --accent:#4cc2c4; --accent-ink:#0f141a; --done:#15302f; --field:#111820; --warn:#f2b48c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:10px;display:grid;gap:6px}
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px}
+.back{font:600 15px var(--f-body);color:var(--accent);background:none;border:0;padding:4px 0;cursor:pointer}
+.status{font-size:13px;color:var(--muted)}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:18px 120px;display:grid;gap:14px}
+h1,h2{font-family:var(--f-display);font-weight:700;margin:0;text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+h1{font-size:32px;line-height:1}
+h2{font-size:21px;line-height:1.1}
+.eyebrow{font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lede{margin:0;color:var(--muted);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px}
+.card.complete{border-color:var(--accent)}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.target{font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tip{margin:0;font-size:13px;color:var(--muted)}
+.sets{display:grid;gap:6px}
+.set{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 8px;border-radius:8px;background:var(--field)}
+.set.on{background:var(--done)}
+.lab{font-size:14px;font-weight:500;min-width:0}
+.lab small{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.tick{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;padding:0}
+.tick svg{width:18px;height:18px;opacity:0}
+.set.on .tick{background:var(--accent);border-color:var(--accent)}
+.set.on .tick svg{opacity:1}
+.fields{display:flex;gap:6px}
+.fld{display:grid;gap:1px;justify-items:center}
+.fld input{width:56px;height:36px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font:600 16px var(--f-body);text-align:center;font-variant-numeric:tabular-nums}
+.fld span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.tick:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.item:focus-visible,.tbtn:focus-visible,.back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.blk{display:grid;gap:4px;font-size:14px;font-weight:500}
+select,textarea{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font:16px var(--f-body);padding:8px}
+textarea{min-height:80px;resize:vertical}
+.list{display:grid;gap:10px}
+.item{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--ink);font:inherit;cursor:pointer;width:100%}
+.item.today{border-color:var(--accent)}
+.date{display:grid;justify-items:center;line-height:1}
+.date b{font-family:var(--f-display);font-size:28px}
+.date span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.item h3{margin:0;font-size:16px;font-weight:600}
+.item p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.pill{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;border-radius:999px;padding:3px 8px;white-space:nowrap;border:1px solid var(--line);color:var(--muted)}
+.pill.done{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pill.part{border-color:var(--accent);color:var(--accent)}
+.pill.now{border-color:var(--warn);color:var(--warn)}
+.section-label{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
+.empty{color:var(--muted);font-size:14px;margin:0}
+.timer{position:fixed;left:0;right:0;bottom:0;z-index:3;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.timer-in{max-width:640px;margin:0 auto;display:flex;gap:6px;align-items:center}
+.timer b{font-family:var(--f-display);font-size:26px;min-width:52px;font-variant-numeric:tabular-nums}
+.timer .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.tbtn{font:600 14px var(--f-body);border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:999px;padding:8px 10px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+<style>html,body{margin:0}body{-webkit-text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px)}</style>
+<script src="workouts.js"></script>
+</head>
+<body><div class="top"><div class="top-in">
+  <div class="top-row"><button class="back" id="back" type="button" hidden>‹ All workouts</button><strong id="count">Workouts</strong><span class="status" id="status">Loading…</span></div>
+  <div class="prog" id="progwrap" hidden><i id="bar"></i></div>
+</div></div>
+
+<main class="wrap" id="main">
+  <header style="display:grid;gap:4px">
+    <div class="eyebrow">Hyrox 7 Jan · Half marathon 17 Jan</div>
+    <h1>Workouts</h1>
+    <p class="lede">Tap a session to start. Everything saves on this phone, even offline. When you finish, tap Save &amp; copy log and paste it into your Claude chat.</p>
+  </header>
+  <div class="list" id="list"></div>
+</main>
+
+<div class="timer" role="region" aria-label="Rest timer"><div class="timer-in">
+  <span class="lbl">Rest</span><b id="clock">0:00</b>
+  <button class="tbtn" type="button" data-s="45">45 s</button>
+  <button class="tbtn" type="button" data-s="90">90 s</button>
+  <button class="tbtn" type="button" data-s="120">2 min</button>
+  <button class="tbtn" type="button" id="stop">Stop</button>
+</div></div>
+
+<script>
+let workouts=[],logs={},cur=null,state=null,timer=null;
+const $=id=>document.getElementById(id);
+const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const check='<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+const setStatus=t=>{$("status").textContent=t};
+const key=(e,i)=>e+"_"+i;
+
+function counts(w,lg){let tot=0,done=0;(w.exercises||[]).forEach(e=>{if(e.optional)return;(e.sets||[]).forEach((s,i)=>{tot++;if(lg&&lg.sets&&lg.sets[key(e.id,i)]&&lg.sets[key(e.id,i)].done)done++})});return {tot,done}}
+
+function renderList(){
+  cur=null;$("back").hidden=true;$("progwrap").hidden=true;$("count").textContent="Workouts";
+  document.title="Workout Log";
+  const t=todayISO();
+  const up=workouts.filter(w=>w.date>=t).sort((a,b)=>a.date.localeCompare(b.date));
+  const past=workouts.filter(w=>w.date<t).sort((a,b)=>b.date.localeCompare(a.date));
+  const item=w=>{const d=new Date(w.date+"T12:00:00");const {tot,done}=counts(w,logs[w.id]);
+    const pill=done&&done===tot?'<span class="pill done">Done</span>':done?`<span class="pill part">${done}/${tot}</span>`:w.date===t?'<span class="pill now">Today</span>':'<span class="pill">Planned</span>';
+    return `<button class="item${w.date===t?" today":""}" id="w-${esc(w.id)}" data-id="${esc(w.id)}" type="button">
+      <span class="date"><span>${d.toLocaleDateString("en-GB",{weekday:"short"})}</span><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-GB",{month:"short"})}</span></span>
+      <span style="min-width:0"><h3>${esc(w.title)}</h3><p>${esc(w.focus||"")}</p></span>${pill}</button>`};
+  $("main").innerHTML=`<header style="display:grid;gap:4px"><div class="eyebrow">Hyrox 7 Jan · Half marathon 17 Jan</div><h1>Workouts</h1>
+    <p class="lede">Tap a session to start. Everything saves on this phone, even offline. When you finish, tap Save &amp; copy log and paste it into your Claude chat.</p></header>
+    ${workouts.length?"":`<p class="empty">No workouts loaded yet.</p>`}<div id="warn"></div>
+    ${up.length?`<div class="section-label">Today & upcoming</div><div class="list">${up.map(item).join("")}</div>`:""}
+    ${past.length?`<div class="section-label">Past</div><div class="list">${past.map(item).join("")}</div>`:""}
+    <button class="tbtn go" id="copyall" type="button" style="justify-self:start">Copy all logs</button>
+    <textarea id="out" readonly hidden aria-label="Log text" style="min-height:160px;font:13px ui-monospace,Menlo,monospace"></textarea>`;
+  $("copyall").onclick=()=>copyOut(workouts.filter(w=>logs[w.id]).sort((a,b)=>a.date.localeCompare(b.date)).map(logText).join("\n\n")||"No sessions logged yet.",$("copyall"));
+  storageWarn();
+  document.querySelectorAll(".item").forEach(b=>b.onclick=()=>openWorkout(b.dataset.id));
+  window.scrollTo(0,0);
+}
+
+function cell(e,i){const k=key(e.id,i);if(!state.sets[k]){state.sets[k]={done:false};(e.sets[i].f||[]).forEach(x=>state.sets[k][x.u]=x.v)}return state.sets[k]}
+
+function openWorkout(id){
+  const w=workouts.find(x=>x.id===id);if(!w)return renderList();
+  cur=w;const lg=logs[id];
+  state={sets:JSON.parse(JSON.stringify((lg&&lg.sets)||{})),answer:(lg&&lg.answer)||"",notes:(lg&&lg.notes)||""};
+  $("back").hidden=false;$("progwrap").hidden=false;document.title=w.title;
+  const q=w.question;
+  $("main").innerHTML=`<header style="display:grid;gap:4px">
+      <div class="eyebrow">${esc(new Date(w.date+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}))} · ${esc(w.focus||"")}</div>
+      <h1>${esc(w.title)}</h1>${w.intro?`<p class="lede">${esc(w.intro)}</p>`:""}</header>
+    ${(w.exercises||[]).map(e=>`<section class="card" id="card-${esc(e.id)}">
+      <div class="head"><h2>${esc(e.name)}${e.optional?' <span class="pill" style="vertical-align:3px">Optional</span>':""}</h2><span class="target">${esc(e.target||"")}</span></div>
+      ${e.tip?`<p class="tip">${esc(e.tip)}</p>`:""}
+      <div class="sets">${e.sets.map((s,i)=>{const c=cell(e,i),k=key(e.id,i);return `<div class="set${c.done?" on":""}" id="row-${esc(k)}">
+        <button class="tick" id="tick-${esc(k)}" data-k="${esc(k)}" aria-pressed="${c.done}" aria-label="Mark ${esc(e.name)} ${esc(s.label)} done" type="button">${check}</button>
+        <div class="lab">${esc(s.label)}${s.sub?`<small>${esc(s.sub)}</small>`:""}</div>
+        <div class="fields">${(s.f||[]).map(x=>`<label class="fld" for="in-${esc(k)}-${esc(x.u)}"><input id="in-${esc(k)}-${esc(x.u)}" type="number" inputmode="decimal" step="${x.u==="kg"?2.5:1}" min="0" value="${c[x.u]??""}" data-k="${esc(k)}" data-u="${esc(x.u)}"><span>${esc(x.u)}</span></label>`).join("")}</div>
+      </div>`}).join("")}</div></section>`).join("")}
+    <section class="card"><h2>After the session</h2>
+      ${q?`<label class="blk" for="answer">${esc(q.label)}<select id="answer"><option value="">Choose…</option>${(q.options||[]).map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select></label>`:""}
+      <label class="blk" for="notes">Notes<textarea id="notes" placeholder="Aches, energy, anything you changed"></textarea></label>
+      ${w.footnote?`<p class="tip">${esc(w.footnote)}</p>`:""}
+      <button class="tbtn go" id="copyone" type="button" style="justify-self:start">Save &amp; copy log</button>
+      <textarea id="out" readonly hidden aria-label="Log text" style="min-height:160px;font:13px ui-monospace,Menlo,monospace"></textarea>
+    </section>`;
+  $("copyone").onclick=()=>{clearTimeout(timer);persist();copyOut(logText(cur),$("copyone"))};
+  if($("answer"))$("answer").value=state.answer;$("notes").value=state.notes;
+  document.querySelectorAll(".tick").forEach(b=>b.onclick=()=>{const c=state.sets[b.dataset.k];c.done=!c.done;b.setAttribute("aria-pressed",c.done);$("row-"+b.dataset.k).classList.toggle("on",c.done);progress();save()});
+  document.querySelectorAll(".fld input").forEach(inp=>inp.oninput=()=>{state.sets[inp.dataset.k][inp.dataset.u]=inp.value===""?null:Number(inp.value);save()});
+  if($("answer"))$("answer").onchange=e=>{state.answer=e.target.value;save()};
+  $("notes").oninput=e=>{state.notes=e.target.value;save()};
+  progress();window.scrollTo(0,0);setStatus(canStore?"Saved on phone":"Not saving");
+}
+function progress(){
+  const {tot,done}=counts(cur,{sets:state.sets});
+  $("count").textContent=`${done} / ${tot} sets`;$("bar").style.width=(tot?done/tot*100:0)+"%";
+  cur.exercises.forEach(e=>{const el=$("card-"+e.id);if(el)el.classList.toggle("complete",e.sets.every((s,i)=>cell(e,i).done))});
+}
+const LKEY=id=>"wlog-"+id;
+let canStore=true;try{localStorage.setItem("wtest","1");localStorage.removeItem("wtest")}catch(e){canStore=false}
+function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+function storageWarn(){const el=$("warn");if(el&&!canStore)el.innerHTML='<p class="empty" style="color:var(--warn)">This browser is not saving entries (private mode?). Copy your log before closing the page.</p>'}
+function persist(){if(!cur)return;const data={sets:state.sets,answer:state.answer,notes:state.notes};logs[cur.id]=data;
+  setStatus(lsSet(LKEY(cur.id),{...data,at:Date.now()})?"Saved on phone":"Not saving · copy your log")}
+function save(){if(!cur)return;logs[cur.id]={sets:state.sets,answer:state.answer,notes:state.notes};clearTimeout(timer);timer=setTimeout(persist,300)}
+const UNIT={kg:" kg",reps:" reps",left:" left",cm:" cm",sec:" s",min:" min"};
+function logText(w){
+  const lg=logs[w.id]||{sets:{}};const d=new Date(w.date+"T12:00:00");
+  const L=["WORKOUT LOG · "+d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})+" · "+w.title];
+  const {tot,done}=counts(w,lg);L.push("Completed "+done+"/"+tot+" sets");
+  (w.exercises||[]).forEach(e=>{const parts=(e.sets||[]).map((s,i)=>{const c=(lg.sets||{})[key(e.id,i)]||{};
+      const f=(s.f||[]).map(x=>{const v=c[x.u]!==undefined?c[x.u]:x.v;return v===null||v===""?"":v+(UNIT[x.u]||" "+x.u)}).filter(Boolean).join(", ");
+      return (c.done?"✓ ":"✗ ")+s.label+(f?" ("+f+")":"")});
+    L.push("- "+e.name+": "+parts.join("; "))});
+  if(lg.answer)L.push("- "+((w.question&&w.question.label)||"Check-in")+": "+lg.answer);
+  if(lg.notes)L.push("- Notes: "+lg.notes);
+  return L.join("\n");
+}
+async function copyOut(text,btn){const ta=$("out");ta.value=text;ta.hidden=false;
+  try{await navigator.clipboard.writeText(text);btn.textContent="Copied · paste it into Claude"}
+  catch(e){ta.focus();ta.select();btn.textContent="Select the text below and copy it"}}
+$("back").onclick=()=>{renderList();try{history.replaceState(null,"",location.pathname)}catch(e){}};
+
+// rest timer
+let tEnd=0,tInt=null;const clock=$("clock");
+function tick(){const left=Math.max(0,Math.round((tEnd-Date.now())/1000));clock.textContent=Math.floor(left/60)+":"+String(left%60).padStart(2,"0");
+  if(left===0){clearInterval(tInt);tInt=null;clock.style.color="var(--accent)";try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}}
+document.querySelectorAll(".timer [data-s]").forEach(b=>b.onclick=()=>{tEnd=Date.now()+b.dataset.s*1000;clock.style.color="";clearInterval(tInt);tInt=setInterval(tick,250);tick()});
+$("stop").onclick=()=>{clearInterval(tInt);tInt=null;clock.textContent="0:00";clock.style.color=""};
+
+// Workouts loaded by Claude. Newest sessions are added here.
+const WORKOUTS=window.WORKOUTS||[];
+workouts=WORKOUTS;
+workouts.forEach(w=>{const v=lsGet(LKEY(w.id));if(v)logs[w.id]={sets:v.sets||{},answer:v.answer||"",notes:v.notes||""}});
+setStatus(canStore?"Saved on phone":"Not saving");
+{const h=(location.hash||"").slice(1);if(h&&workouts.some(w=>w.id===h))openWorkout(h);else renderList();}
+window.addEventListener("pagehide",()=>{if(cur)persist()});
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body>
+</html>
