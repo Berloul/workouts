@@ -127,8 +127,9 @@ function renderList(){
   cur=null;$("back").hidden=true;$("progwrap").hidden=true;$("count").textContent="Workouts";
   document.title="Workout Log";
   const t=todayISO();
-  const up=workouts.filter(w=>w.date>=t).sort((a,b)=>a.date.localeCompare(b.date));
-  const past=workouts.filter(w=>w.date<t).sort((a,b)=>b.date.localeCompare(a.date));
+  // Next 2 sessions not yet done. Sessions Claude marks as done are hidden.
+  const up=workouts.filter(w=>!w.done&&w.date>=t).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,2);
+  const past=[];
   const item=w=>{const d=new Date(w.date+"T12:00:00");const {tot,done}=counts(w,logs[w.id]);
     const pill=done&&done===tot?'<span class="pill done">Done</span>':done?`<span class="pill part">${done}/${tot}</span>`:w.date===t?'<span class="pill now">Today</span>':'<span class="pill">Planned</span>';
     return `<button class="item${w.date===t?" today":""}" id="w-${esc(w.id)}" data-id="${esc(w.id)}" type="button">
@@ -136,8 +137,8 @@ function renderList(){
       <span style="min-width:0"><h3>${esc(w.title)}</h3><p>${esc(w.focus||"")}</p></span>${pill}</button>`};
   $("main").innerHTML=`<header style="display:grid;gap:4px"><div class="eyebrow">Hyrox 7 Jan · Half marathon 17 Jan</div><h1>Workouts</h1>
     <p class="lede">Tap a session to start. Everything saves on this phone, even offline. When you finish, tap Save &amp; copy log and paste it into your Claude chat.</p></header>
-    ${workouts.length?"":`<p class="empty">No workouts loaded yet.</p>`}<div id="warn"></div>
-    ${up.length?`<div class="section-label">Today & upcoming</div><div class="list">${up.map(item).join("")}</div>`:""}
+    ${up.length?"":`<p class="empty">No upcoming workouts. Ask Claude for your next sessions.</p>`}<div id="warn"></div>
+    ${up.length?`<div class="section-label">Next workouts</div><div class="list">${up.map(item).join("")}</div>`:""}
     ${past.length?`<div class="section-label">Past</div><div class="list">${past.map(item).join("")}</div>`:""}
     <button class="tbtn go" id="copyall" type="button" style="justify-self:start">Copy all logs</button>
     <textarea id="out" readonly hidden aria-label="Log text" style="min-height:160px;font:13px ui-monospace,Menlo,monospace"></textarea>`;
