@@ -128,17 +128,19 @@ function renderList(){
   document.title="Workout Log";
   const t=todayISO();
   // Next 2 sessions not yet done. Sessions Claude marks as done are hidden.
-  const up=workouts.filter(w=>!w.done&&w.date>=t).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,2);
+  const up=workouts.filter(w=>w.type!=="run"&&!w.done&&w.date>=t).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,2);
   const past=[];
+  const runs=workouts.filter(w=>w.type==="run"&&!w.done&&w.date>=t).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,2);
   const item=w=>{const d=new Date(w.date+"T12:00:00");const {tot,done}=counts(w,logs[w.id]);
-    const pill=done&&done===tot?'<span class="pill done">Done</span>':done?`<span class="pill part">${done}/${tot}</span>`:w.date===t?'<span class="pill now">Today</span>':'<span class="pill">Planned</span>';
+    const pill=done&&done===tot?'<span class="pill done">Done</span>':done?`<span class="pill part">${done}/${tot}</span>`:w.date===t?'<span class="pill now">Today</span>':w.type==="run"?'<span class="pill">Run</span>':'<span class="pill">Planned</span>';
     return `<button class="item${w.date===t?" today":""}" id="w-${esc(w.id)}" data-id="${esc(w.id)}" type="button">
       <span class="date"><span>${d.toLocaleDateString("en-GB",{weekday:"short"})}</span><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-GB",{month:"short"})}</span></span>
       <span style="min-width:0"><h3>${esc(w.title)}</h3><p>${esc(w.focus||"")}</p></span>${pill}</button>`};
   $("main").innerHTML=`<header style="display:grid;gap:4px"><div class="eyebrow">Hyrox 7 Jan · Half marathon 17 Jan</div><h1>Workouts</h1>
     <p class="lede">Tap a session to start. Everything saves on this phone, even offline. When you finish, tap Save &amp; copy log and paste it into your Claude chat.</p></header>
-    ${up.length?"":`<p class="empty">No upcoming workouts. Ask Claude for your next sessions.</p>`}<div id="warn"></div>
+    ${up.length||runs.length?"":`<p class="empty">No upcoming workouts. Ask Claude for your next sessions.</p>`}<div id="warn"></div>
     ${up.length?`<div class="section-label">Next workouts</div><div class="list">${up.map(item).join("")}</div>`:""}
+    ${runs.length?`<div class="section-label">Next runs · from your running plan</div><div class="list">${runs.map(item).join("")}</div>`:""}
     ${past.length?`<div class="section-label">Past</div><div class="list">${past.map(item).join("")}</div>`:""}
     <button class="tbtn go" id="copyall" type="button" style="justify-self:start">Copy all logs</button>
     <textarea id="out" readonly hidden aria-label="Log text" style="min-height:160px;font:13px ui-monospace,Menlo,monospace"></textarea>`;
@@ -195,7 +197,7 @@ function storageWarn(){const el=$("warn");if(el&&!canStore)el.innerHTML='<p clas
 function persist(){if(!cur)return;const data={sets:state.sets,answer:state.answer,notes:state.notes};logs[cur.id]=data;
   setStatus(lsSet(LKEY(cur.id),{...data,at:Date.now()})?"Saved on phone":"Not saving · copy your log")}
 function save(){if(!cur)return;logs[cur.id]={sets:state.sets,answer:state.answer,notes:state.notes};clearTimeout(timer);timer=setTimeout(persist,300)}
-const UNIT={kg:" kg",reps:" reps",left:" left",cm:" cm",sec:" s",min:" min"};
+const UNIT={kg:" kg",reps:" reps",left:" left",cm:" cm",sec:" s",min:" min",s:" s",km:" km",bpm:" bpm",effort:"/10 effort"};
 function logText(w){
   const lg=logs[w.id]||{sets:{}};const d=new Date(w.date+"T12:00:00");
   const L=["WORKOUT LOG · "+d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})+" · "+w.title];

@@ -356,6 +356,434 @@ window.WORKOUTS=[
   "done": true
  },
  {
+  "type": "run",
+  "date": "2026-10-07",
+  "title": "Threshold run",
+  "focus": "Base phase · quality run · about 10 km",
+  "intro": "From your running plan (base phase). If Garmin shows something different, follow Garmin and tell Claude.",
+  "question": {
+   "label": "How did the reps feel?",
+   "options": [
+    "Controlled",
+    "Hard but held pace",
+    "Pace slipped"
+   ]
+  },
+  "footnote": "Judge by heart rate first in the heat: reps should sit around 167–179 bpm (Zone 4).",
+  "exercises": [
+   {
+    "id": "wu",
+    "name": "Warm-up",
+    "target": "15 min easy",
+    "tip": "Zone 2, 6:15–6:45 /km, then 4 × 20 s strides.",
+    "sets": [
+     {
+      "label": "Done",
+      "f": []
+     }
+    ]
+   },
+   {
+    "id": "rep",
+    "name": "Threshold reps",
+    "target": "3 × 8 min @ 4:35 /km",
+    "tip": "2 min easy jog between reps. Even pace: the third should feel like the first.",
+    "sets": [
+     {
+      "label": "Rep 1",
+      "f": [
+       {
+        "u": "bpm",
+        "v": 170
+       },
+       {
+        "u": "effort",
+        "v": 7
+       }
+      ],
+      "sub": "8 min @ 4:35 /km"
+     },
+     {
+      "label": "Rep 2",
+      "f": [
+       {
+        "u": "bpm",
+        "v": 170
+       },
+       {
+        "u": "effort",
+        "v": 7
+       }
+      ],
+      "sub": "8 min @ 4:35 /km"
+     },
+     {
+      "label": "Rep 3",
+      "f": [
+       {
+        "u": "bpm",
+        "v": 170
+       },
+       {
+        "u": "effort",
+        "v": 7
+       }
+      ],
+      "sub": "8 min @ 4:35 /km"
+     }
+    ]
+   },
+   {
+    "id": "cd",
+    "name": "Cool-down",
+    "target": "10 min easy",
+    "tip": "Very easy jog or walk.",
+    "sets": [
+     {
+      "label": "Done",
+      "f": []
+     }
+    ]
+   },
+   {
+    "id": "tot",
+    "name": "Whole run (from Garmin)",
+    "target": "About 10 km",
+    "tip": "Total distance, time and average heart rate.",
+    "sets": [
+     {
+      "label": "Total",
+      "f": [
+       {
+        "u": "km",
+        "v": 10
+       },
+       {
+        "u": "min",
+        "v": 55
+       },
+       {
+        "u": "bpm",
+        "v": 150
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "id": "run-2026-10-07"
+ },
+ {
+  "date": "2026-10-08",
+  "title": "Hyrox circuit",
+  "focus": "Row + power run · about 60 min",
+  "intro": "Log each round's time in minutes and seconds (e.g. 4 min 35 s) and your effort out of 10.",
+  "question": {
+   "label": "Legs and shoulders after",
+   "options": [
+    "Fine",
+    "Legs tired",
+    "Shoulders tired",
+    "Both tired"
+   ]
+  },
+  "footnote": "Long run on Saturday: keep the 800 m at target pace, not faster.",
+  "exercises": [
+   {
+    "id": "warm",
+    "name": "Warm-up",
+    "target": "8 min",
+    "tip": "Easy row 3 min, leg swings, hip circles, 10 air squats, 5 burpees.",
+    "sets": [
+     {
+      "label": "Done",
+      "f": []
+     }
+    ]
+   },
+   {
+    "id": "row",
+    "name": "Row, 1.2 km progressive",
+    "target": "3 rounds · 90 s rest",
+    "tip": "400 m steady (rate ~22) → 400 m moderate (24–26) → 400 m hard (28–30). Damper 5–6.",
+    "sets": [
+     {
+      "label": "Round 1",
+      "f": [
+       {
+        "u": "min",
+        "v": 4
+       },
+       {
+        "u": "s",
+        "v": 30
+       },
+       {
+        "u": "effort",
+        "v": 7
+       }
+      ]
+     },
+     {
+      "label": "Round 2",
+      "f": [
+       {
+        "u": "min",
+        "v": 4
+       },
+       {
+        "u": "s",
+        "v": 30
+       },
+       {
+        "u": "effort",
+        "v": 7
+       }
+      ]
+     },
+     {
+      "label": "Round 3",
+      "f": [
+       {
+        "u": "min",
+        "v": 4
+       },
+       {
+        "u": "s",
+        "v": 30
+       },
+       {
+        "u": "effort",
+        "v": 7
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "run",
+    "name": "Run 800 m",
+    "target": "3:58–4:02 (about 5:00 /km)",
+    "tip": "5K pace + 40 s. Steady, don't race the first one. Check heart rate: rounds 2–3 should reach about 160–170 bpm. Below 155 and easy = too easy, tell Claude.",
+    "sets": [
+     {
+      "label": "Round 1",
+      "f": [
+       {
+        "u": "min",
+        "v": 4
+       },
+       {
+        "u": "s",
+        "v": 0
+       },
+       {
+        "u": "effort",
+        "v": 7
+       },
+       {
+        "u": "bpm",
+        "v": 165
+       }
+      ]
+     },
+     {
+      "label": "Round 2",
+      "f": [
+       {
+        "u": "min",
+        "v": 4
+       },
+       {
+        "u": "s",
+        "v": 0
+       },
+       {
+        "u": "effort",
+        "v": 7
+       },
+       {
+        "u": "bpm",
+        "v": 165
+       }
+      ]
+     },
+     {
+      "label": "Round 3",
+      "f": [
+       {
+        "u": "min",
+        "v": 4
+       },
+       {
+        "u": "s",
+        "v": 0
+       },
+       {
+        "u": "effort",
+        "v": 7
+       },
+       {
+        "u": "bpm",
+        "v": 165
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "lunge",
+    "name": "Dumbbell standing lunges",
+    "target": "20 reps @ 2 × 10 kg",
+    "tip": "Alternating legs, 10 per leg, torso tall.",
+    "sets": [
+     {
+      "label": "Round 1",
+      "f": [
+       {
+        "u": "kg",
+        "v": 10
+       },
+       {
+        "u": "reps",
+        "v": 20
+       }
+      ],
+      "sub": "kg per hand"
+     },
+     {
+      "label": "Round 2",
+      "f": [
+       {
+        "u": "kg",
+        "v": 10
+       },
+       {
+        "u": "reps",
+        "v": 20
+       }
+      ],
+      "sub": "kg per hand"
+     },
+     {
+      "label": "Round 3",
+      "f": [
+       {
+        "u": "kg",
+        "v": 10
+       },
+       {
+        "u": "reps",
+        "v": 20
+       }
+      ],
+      "sub": "kg per hand"
+     }
+    ]
+   },
+   {
+    "id": "bbj",
+    "name": "Burpee broad jumps",
+    "target": "8 reps",
+    "tip": "Chest to the floor, jump forward, land softly.",
+    "sets": [
+     {
+      "label": "Round 1",
+      "f": [
+       {
+        "u": "reps",
+        "v": 8
+       }
+      ]
+     },
+     {
+      "label": "Round 2",
+      "f": [
+       {
+        "u": "reps",
+        "v": 8
+       }
+      ]
+     },
+     {
+      "label": "Round 3",
+      "f": [
+       {
+        "u": "reps",
+        "v": 8
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "wallball",
+    "name": "Wall balls",
+    "target": "20 reps @ 9 kg",
+    "tip": "Full depth, hit the target every rep. 2 min rest after this.",
+    "sets": [
+     {
+      "label": "Round 1",
+      "f": [
+       {
+        "u": "kg",
+        "v": 9
+       },
+       {
+        "u": "reps",
+        "v": 20
+       }
+      ]
+     },
+     {
+      "label": "Round 2",
+      "f": [
+       {
+        "u": "kg",
+        "v": 9
+       },
+       {
+        "u": "reps",
+        "v": 20
+       }
+      ]
+     },
+     {
+      "label": "Round 3",
+      "f": [
+       {
+        "u": "kg",
+        "v": 9
+       },
+       {
+        "u": "reps",
+        "v": 20
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "cool",
+    "name": "Cool-down",
+    "target": "10 min",
+    "tip": "Easy bike, walk or very light jog.",
+    "sets": [
+     {
+      "label": "Done",
+      "f": [
+       {
+        "u": "min",
+        "v": 10
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "id": "2026-10-08"
+ },
+ {
   "date": "2026-10-09",
   "title": "Upper body · muscle",
   "focus": "Block 1 · week 1 · about 50 min",
@@ -758,6 +1186,93 @@ window.WORKOUTS=[
    }
   ],
   "id": "2026-10-09"
+ },
+ {
+  "type": "run",
+  "date": "2026-10-10",
+  "title": "Long run",
+  "focus": "Base phase · 14 km",
+  "intro": "From your running plan (base phase). If Garmin shows something different, follow Garmin and tell Claude.",
+  "question": {
+   "label": "Legs at the end",
+   "options": [
+    "Fresh",
+    "Tired but fine",
+    "Heavy, struggled late"
+   ]
+  },
+  "footnote": "48 h after Thursday's Hyrox circuit: keep the first 12 km truly easy.",
+  "exercises": [
+   {
+    "id": "easy",
+    "name": "Easy kilometres",
+    "target": "12 km in Zone 2",
+    "tip": "6:15–6:45 /km, heart rate 119–146 bpm. Slow down on hills rather than let heart rate climb.",
+    "sets": [
+     {
+      "label": "Km 1–12",
+      "f": [
+       {
+        "u": "bpm",
+        "v": 140
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "fin",
+    "name": "Strong finish",
+    "target": "Last 2 km @ 5:00 /km",
+    "tip": "Smooth and controlled, not a sprint.",
+    "sets": [
+     {
+      "label": "Km 13–14",
+      "f": [
+       {
+        "u": "min",
+        "v": 10
+       },
+       {
+        "u": "s",
+        "v": 0
+       },
+       {
+        "u": "bpm",
+        "v": 155
+       }
+      ],
+      "sub": "Time for the 2 km"
+     }
+    ]
+   },
+   {
+    "id": "tot",
+    "name": "Whole run (from Garmin)",
+    "target": "14 km",
+    "tip": "Total distance, time and average heart rate.",
+    "sets": [
+     {
+      "label": "Total",
+      "f": [
+       {
+        "u": "km",
+        "v": 14
+       },
+       {
+        "u": "min",
+        "v": 88
+       },
+       {
+        "u": "bpm",
+        "v": 142
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "id": "run-2026-10-10"
  },
  {
   "date": "2026-10-12",
