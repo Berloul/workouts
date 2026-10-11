@@ -127,21 +127,22 @@ function renderList(){
   cur=null;$("back").hidden=true;$("progwrap").hidden=true;$("count").textContent="Workouts";
   document.title="Workout Log";
   const t=todayISO();
-  // Next 2 sessions not yet done. Sessions Claude marks as done are hidden.
-  const up=workouts.filter(w=>w.type!=="run"&&!w.done&&w.date>=t).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,2);
-  const past=[];
-  const runs=workouts.filter(w=>w.type==="run"&&!w.done&&w.date>=t).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,2);
+  // Whole schedule: every session Claude hasn't marked done stays listed, whatever its date.
+  const byDate=(a,b)=>a.date.localeCompare(b.date);
+  const isDone=w=>{const {tot,done}=counts(w,logs[w.id]);return tot>0&&done===tot};
+  const pending=workouts.filter(w=>!w.done&&!isDone(w)).sort(byDate);
+  const finished=workouts.filter(w=>!w.done&&isDone(w)).sort(byDate);
   const item=w=>{const d=new Date(w.date+"T12:00:00");const {tot,done}=counts(w,logs[w.id]);
-    const pill=done&&done===tot?'<span class="pill done">Done</span>':done?`<span class="pill part">${done}/${tot}</span>`:w.date===t?'<span class="pill now">Today</span>':w.type==="run"?'<span class="pill">Run</span>':'<span class="pill">Planned</span>';
+    const pill=done&&done===tot?'<span class="pill done">Done</span>':done?`<span class="pill part">${done}/${tot}</span>`:w.date===t?'<span class="pill now">Today</span>':w.date<t?'<span class="pill">To do</span>':'<span class="pill">Planned</span>';
+    const kind=w.type==="run"?"Run · ":"";
     return `<button class="item${w.date===t?" today":""}" id="w-${esc(w.id)}" data-id="${esc(w.id)}" type="button">
       <span class="date"><span>${d.toLocaleDateString("en-GB",{weekday:"short"})}</span><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-GB",{month:"short"})}</span></span>
-      <span style="min-width:0"><h3>${esc(w.title)}</h3><p>${esc(w.focus||"")}</p></span>${pill}</button>`};
+      <span style="min-width:0"><h3>${esc(w.title)}</h3><p>${kind}${esc(w.focus||"")}</p></span>${pill}</button>`};
   $("main").innerHTML=`<header style="display:grid;gap:4px"><div class="eyebrow">Hyrox 7 Jan · Half marathon 17 Jan</div><h1>Workouts</h1>
-    <p class="lede">Tap a session to start. Everything saves on this phone, even offline. When you finish, tap Save &amp; copy log and paste it into your Claude chat.</p></header>
-    ${up.length||runs.length?"":`<p class="empty">No upcoming workouts. Ask Claude for your next sessions.</p>`}<div id="warn"></div>
-    ${up.length?`<div class="section-label">Next workouts</div><div class="list">${up.map(item).join("")}</div>`:""}
-    ${runs.length?`<div class="section-label">Next runs · from your running plan</div><div class="list">${runs.map(item).join("")}</div>`:""}
-    ${past.length?`<div class="section-label">Past</div><div class="list">${past.map(item).join("")}</div>`:""}
+    <p class="lede">Dates are suggestions: do the sessions in any order. Each one stays here until it's done. When you finish, tap Save &amp; copy log and paste it into your Claude chat.</p></header>
+    ${pending.length||finished.length?"":`<p class="empty">No workouts loaded. Ask Claude for your next week.</p>`}<div id="warn"></div>
+    ${pending.length?`<div class="section-label">Schedule · suggested days</div><div class="list">${pending.map(item).join("")}</div>`:""}
+    ${finished.length?`<div class="section-label">Done · waiting for Claude</div><div class="list">${finished.map(item).join("")}</div>`:""}
     <button class="tbtn go" id="copyall" type="button" style="justify-self:start">Copy all logs</button>
     <textarea id="out" readonly hidden aria-label="Log text" style="min-height:160px;font:13px ui-monospace,Menlo,monospace"></textarea>`;
   $("copyall").onclick=()=>copyOut(workouts.filter(w=>logs[w.id]).sort((a,b)=>a.date.localeCompare(b.date)).map(logText).join("\n\n")||"No sessions logged yet.",$("copyall"));
